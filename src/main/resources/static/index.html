@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zinseszinsberechnung</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    #result {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #fdfdfd;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+    }
+    .result-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .result-item {
+      margin-bottom: 5px;
+    }
+    .custom-img {
+      width: 300px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="mt-5">Fäbu's Zinseszinsberechnung</h1>
+  <img src="images/zinseszins.png" alt="Zinseszins Bild" class="img-fluid mt-3 custom-img">
+  <form id="zinseszinsForm" class="mt-3">
+    <div class="form-group">
+      <label for="anfangskapital">Anfangskapital:</label>
+      <input type="number" class="form-control" id="anfangskapital" name="anfangskapital" step="0.01" required>
+    </div>
+    <div class="form-group">
+      <label for="monatlicheSparrate">Monatliche Sparrate:</label>
+      <input type="number" class="form-control" id="monatlicheSparrate" name="monatlicheSparrate" step="0.01" required>
+    </div>
+    <div class="form-group">
+      <label for="jahreszins">Jahreszins (%):</label>
+      <input type="number" class="form-control" id="jahreszins" name="jahreszins" step="0.01" required>
+    </div>
+    <div class="form-group">
+      <label for="spardauerInJahren">Spardauer in Jahren:</label>
+      <input type="number" class="form-control" id="spardauerInJahren" name="spardauerInJahren" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Berechnen</button>
+  </form>
+  <div class="mt-3" id="result"></div>
+</div>
+
+<script>
+  document.getElementById('zinseszinsForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const anfangskapital = document.getElementById('anfangskapital').value;
+    const monatlicheSparrate = document.getElementById('monatlicheSparrate').value;
+    const jahreszins = document.getElementById('jahreszins').value;
+    const spardauerInJahren = document.getElementById('spardauerInJahren').value;
+
+    fetch(`/berechne?anfangskapital=${anfangskapital}&monatlicheSparrate=${monatlicheSparrate}&jahreszins=${jahreszins}&spardauerInJahren=${spardauerInJahren}`)
+            .then(response => response.text())
+            .then(data => {
+              const resultDiv = document.getElementById('result');
+              resultDiv.innerHTML = `<div class="result-header">Berechnungsergebnisse</div>${data.split('<br>').map(item => `<div class="result-item">${item}</div>`).join('')}`;
+
+              // Allgemeine Style-Anpassungen
+              resultDiv.style.marginTop = "20px";
+              resultDiv.style.padding = "20px";
+              resultDiv.style.backgroundColor = "#a0c2e3";
+              resultDiv.style.border = "1px solid #dee2e6";
+              resultDiv.style.borderRadius = "5px";
+
+              // Spezifische Style-Anpassungen für Header und Items
+              const header = resultDiv.querySelector('.result-header');
+              header.style.fontWeight = "bold";
+              header.style.marginBottom = "10px";
+
+              const items = resultDiv.querySelectorAll('.result-item');
+              items.forEach(item => {
+                item.style.marginBottom = "5px";
+              });
+
+              resultDiv.style.display = 'block';
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              document.getElementById('result').innerHTML = 'Es ist ein Fehler aufgetreten.';
+            });
+  });
+</script>
+</body>
+</html>
